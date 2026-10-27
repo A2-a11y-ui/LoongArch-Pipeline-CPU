@@ -23,6 +23,16 @@ always @(*) begin
 		`ALU_NOR: result = ~(a | b);
 		
 		`ALU_PASS_B: result = b;
+		
+		`ALU_SLT: result = ($signed(a) < $signed(b)) ? 32'd1 : 32'd0;
+
+        `ALU_SLTU: result = (a < b) ? 32'd1 : 32'd0;
+		
+		`ALU_SLL: result = a << b[4:0];
+		
+		`ALU_SRL: result = a >> b[4:0];
+		
+		`ALU_SRA: result = $signed(a) >>> b[4:0];
 
         default:  result = 32'b0;
 
