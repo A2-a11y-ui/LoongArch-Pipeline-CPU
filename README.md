@@ -8,3 +8,4 @@ CPU: Five-stage pipeline
 
 Member A: ALU, Branch, Forwarding
 Member B: Logic, Memory, I-Cache
+Member A GitHub test: 2026-10-26
