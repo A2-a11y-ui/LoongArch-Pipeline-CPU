@@ -1,4 +1,4 @@
-<WritingBlock id="58321" variant="document"># CPU 共同接口规范 V1.0
+# CPU 共同接口规范 V1.0
 
 1. 基础参数
 
@@ -96,4 +96,4 @@ I-Cache 和主存之间的握手协议
 
 FPGA 上板时的存储器实现及复位时序
 
-以上内容须在对应阶段共同确认后再实现。 </WritingBlock>
+以上内容须在对应阶段共同确认后再实现。 

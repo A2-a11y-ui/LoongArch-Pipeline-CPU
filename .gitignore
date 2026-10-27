@@ -1,13 +1,21 @@
-<CodeBlock language="gitignore" editable> # Vivado generated files /build/ .Xil/ *.cache/ *.runs/ *.sim/ *.gen/ *.hw/ *.ip_user_files/
+# Vivado generated files
+/build/
+.Xil/
+*.cache/
+*.runs/
+*.sim/
+*.gen/
+*.hw/
+*.ip_user_files/
 
-Vivado temporary files
+# Vivado temporary files
+*.jou
+*.log
+*.str
 
-*.jou *.log *.str
-
-Project files generated from scripts
-
+# Project files generated from scripts
 *.xpr
 
-Temporary files
-
-*.tmp *.bak </CodeBlock>
+# Temporary files
+*.tmp
+*.bak
