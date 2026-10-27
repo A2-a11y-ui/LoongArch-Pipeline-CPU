@@ -66,6 +66,14 @@ initial begin
 
     // XOR
     check(32'hAA, 32'h55, 4'h4, 32'hFF);
+	
+	// NOR
+    check(32'h000000F0, 32'h0000000F, 4'h5, 32'hFFFFFF00);
+
+    check(32'h00000000, 32'h00000000, 4'h5, 32'hFFFFFFFF);
+
+    // PASS_B
+    check(32'h12345678, 32'h89ABCDEF, 4'hB, 32'h89ABCDEF);
 
     // Default operation
     check(32'd8, 32'd3, 4'hF, 32'd0);

@@ -19,6 +19,10 @@ always @(*) begin
         `ALU_OR:  result = a | b;
 
         `ALU_XOR: result = a ^ b;
+		
+		`ALU_NOR: result = ~(a | b);
+		
+		`ALU_PASS_B: result = b;
 
         default:  result = 32'b0;
 
