@@ -36,6 +36,7 @@ Adapter 内部已经例化 `icache_2way_latency`，IF 集成层**不要重复例
 握手只在 `posedge clk` 成立：
 
 - `req_fire = if_req_valid && if_req_ready`：且在 `rst=0 && redirect=0` 下代表**恰好接受一笔**请求；IF 在接受前必须保持地址和 valid 不变。PC 的顺序推进与已接受请求的关联由 IF 控制模块管理。
+- **IF 防重复请求规则：** IF 控制器必须在 `req_fire` 的时钟沿记录“当前 PC 的请求已接受”，之后不得为同一条取指请求重复握手；正常顺序 PC 在 IF 控制器中按已接受请求推进。若出现 Redirect，则锁存目标 `redirect_pc`，并持续保持新的目标请求与地址，直至该目标请求真正发生 `req_fire`，不因 Adapter `busy=1` 而丢失目标。
 - `resp_fire = if_resp_valid && if_resp_ready`：代表**恰好消费一笔**响应；未消费且未取消的响应，其 `valid/pc/inst/error` 必须保持稳定。
 - `if_resp_error=1` 不是正常指令（不得向后级发射有效写回/存储操作）；第一版可由测试平台明确终止并报错，若整机引入异常处理须再定义异常控制。
 - 单未完成请求、阻塞式响应；原则上等待上一笔响应消费后才能接受下一笔请求。本方案首先保证正确性，不保证 Hit 的一周期连续吞吐。
@@ -47,6 +48,7 @@ Adapter 内部已经例化 `icache_2way_latency`，IF 集成层**不要重复例
 - `if_resp_ready = !rst && !redirect && !ifid_flush && id_can_advance`，并且 **IF/ID 在该时钟沿确实允许接收**；不能在下游保持时悄悄消费响应。
 - `ifid_flush=1`：即便 `stall=1`，仍将 IF/ID 的 `valid` 清为 0。若 Redirect 触发，也同时确保 Adapter 旧响应失效。
 - `id_can_advance=0`：IF/ID 保持，`if_resp_ready=0`；Adapter 必须维持旧响应不变（若有）。
+- **下游 Stall 与 Redirect/Flush 同时出现：** 一般 Stall 不得消费 Adapter 响应，`if_resp_ready=0`；但 `ifid_flush=1` 或有效 Redirect 到来时，必须按 IF/ID 的 **Reset > Flush > Stall** 优先级清除错误路径 `valid`，同时不消费旧响应。
 - `id_can_advance=1 && if_resp_valid=1`：一次响应握手，IF/ID 捕获 `pc/inst/valid=1`（错误响应另行禁止普通有效指令进入）。
 - `id_can_advance=1 && if_resp_valid=0`：IF/ID 装入 `valid=0` bubble，避免同一条指令进入 ID 两次。
 
@@ -58,7 +60,9 @@ Adapter 内部已经例化 `icache_2way_latency`，IF 集成层**不要重复例
 - BL/JIRL 的 `PC+4` 沿 EX/MEM、MEM/WB 正确传递并写回。
 - **PC 控制器（A）** 对 `redirect_pc` 负责：Redirect 发生当拍保存新目标地址；即使 Cache Adapter 的 `busy=1`，也不能丢目标。之后持续提交目标 PC 请求直到 `req_fire`。
 - **Cache Adapter（B）** 仅收到 `redirect`，不接收 `redirect_pc`，也不自行发起新取指。对旧未完成请求：若不能物理取消，则 `DRAIN` 回填直到结束；旧响应绝不可产生有效 IF/ID 更新。
-- Redirect 与旧请求、响应同周期冲突时以 Redirect 为准；Redirect 事件需要**恰好一次**生效，采用脉冲/事件寄存或等效去重。旧请求等待期间发生 Redirect 后，不得再驱动旧请求地址。
+- Redirect 与旧请求、响应同周期冲突时以 Redirect 为准；Redirect 事件需要**恰好一次**生效，采用脉冲/事件寄存或等效去重。
+- **IF → Adapter 接口：** Redirect 发生后，IF 不得再提交错误路径的新请求；必须保存正确的 `redirect_pc`，等待 Adapter 重新给出 `if_req_ready=1` 后，持续以该目标地址请求直至 `req_fire`。
+- **Adapter → I-Cache 内部接口：** 若 Redirect 时旧 Cache Miss 已经发起且尚未完成，不能把其内部请求直接撤销。Adapter 进入或保持 `DRAIN` 状态，继续保持旧请求 `req_valid` 及已锁存的 `pending_pc`，直到 Cache 报告旧事务完成；旧结果一律丢弃，再开放新的 IF 请求。这里允许 Adapter 对 I-Cache 继续驱动旧地址，但绝不允许该地址成为新的 IF 有效响应。
 - 若 Redirect 与下游 Stall 同时发生，Flush/Redirect 控制不能被 Stall 吞掉；各个流水线寄存器的局部优先级仍要单独定义，不能简单建立“全局统一 Stall”。
 - 若收到连续 Redirect，须规定最新有效分支优先/串行处置的明确策略并增加专门测试；首版可约束“同一时刻只允许一笔有效 EX Redirect”但必须写明。
 
@@ -98,3 +102,4 @@ Adapter 内部已经例化 `icache_2way_latency`，IF 集成层**不要重复例
 4. Redirect 目标 PC 由 A 保存，Adapter 负责旧事务失效、排空；明确 EX 分支不被 Flush。
 5. 补充 BL/JIRL、ST.W store-data 前递及 load-use 等细节。
 6. 写明仍为**讨论稿**，不得将独立 Cache 测试作为五级流水线联合验证结果。
+7. 根据第二轮复核区分 IF→Adapter 与 Adapter→I-Cache 的 Redirect 行为，并明确 `req_fire` 防重发、目标 PC 保存和 Stall/Flush 响应消费优先级。
