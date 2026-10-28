@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 // V0.7 OFFICIAL PC/IF: 12-case IF+cache+IF/ID integrated regression.
 // This IS the formal PC/IF controller integration regression.
-// V0.6 self-checking joint IF test (Vivado 2019.1, Verilog-2001).
+// V0.7 official PC/IF joint regression (Vivado 2019.1, Verilog-2001).
 // Uses actual IF/ID, adapter, 2-way Cache and latency-3 backing ROM.
 // Uses team-A official pc_if_controller, not reference IF driver.
 module tb_ifetch_subsystem_v07;
@@ -298,8 +298,8 @@ module tb_ifetch_subsystem_v07;
         verify(id_pc===32'h00000140,"new PC wins old pending request");
 
 
-        // V0.7 PRECHECK ADDITIONS: run against the known-good V0.6 harness.
-        // The formal team-A pc_if_controller is NOT used in this precheck.
+        // V0.7 OFFICIAL additions: extend the formal PC/IF regression.
+        // Uses team-A official pc_if_controller; V0.6 reference driver is excluded.
         $display("CASE 10: sequential fetch crosses a 16-byte cache-line boundary");
         reset_to_pc(32'h0000000C); // Last word in line 0, then line 1
         d0=delivered_total;
