@@ -343,7 +343,7 @@ module tb_ifetch_subsystem_v07;
                "mid-miss reset dropped old PC and restarted at requested PC");
 
         $display("=============================================");
-        $display("V0.7 PRECHECK (V0.6 reference PC driver), NOT official PC/IF");
+        $display("V0.7 OFFICIAL PC/IF INTEGRATION TEST");
         $display("Total checks = %0d",checks);
         $display("Total errors = %0d",errors);
         $display("Total requests = %0d, responses = %0d",req_total,resp_total);
