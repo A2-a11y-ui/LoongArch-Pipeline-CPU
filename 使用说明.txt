@@ -1,0 +1,41 @@
+LoongArch-Pipeline-CPU | 阶段一译码器（13 条指令）| V0.1
+
+这是“可独立仿真的阶段一版本”，尚未合并队员 A 的其余指令和分支控制。
+请双方先审核接口；不要无条件覆盖仓库中他人已开始开发的 decoder.v。
+
+文件安排（对应项目根目录）：
+  rtl/common/decoder.v         -> Design Sources
+  tb/tb_decoder.v               -> Simulation Sources
+  docs/instruction_spec.md     -> 文档 V0.3（可以先保存，与 A 审核后再提交）
+
+运行依赖（来自已完成的仓库代码）：
+  rtl/common/cpu_defs.vh
+  rtl/memory_cache/imm_gen.v
+  rtl/alu_branch/alu.v
+
+操作步骤（Vivado 2019.1）：
+1. 在 GitHub Desktop 中确认当前分支为 feature/memory，且已拉取 main 中最新 ALU。
+2. 保存当前工作；将此压缩包中的文件按相对路径复制到项目目录。
+3. 若仓库中已经存在 rtl/common/decoder.v，先比较差异并与队员 A 协商，不直接覆盖！
+4. 打开原 build/loongarch_cpu/loongarch_cpu.xpr。
+5. Add Sources -> Add or Create Design Sources，加入 rtl/common/decoder.v（如果已经加入则跳过）。
+6. 确认 imm_gen.v 与 alu.v 均已在 Design Sources；如缺失，Add Sources 加入。
+7. Add Sources -> Add or Create Simulation Sources，加入 tb/tb_decoder.v。
+8. 在 Sources 中右键 tb_decoder -> Set as Top。
+9. Run Simulation -> Run Behavioral Simulation。
+10. 查看 Tcl Console，预期输出 Total tests = 38、Total errors = 0 和 ALL TESTS PASSED。
+
+本测试检查：
+- 13 条真实 LoongArch 机器码的有效识别
+- rd/rj/rk 字段和 ST.W 使用 rd 字段作为存储数据源
+- 不同类型立即数、负数符号扩展和边界
+- ALU 操作码、寄存器写回/访存控制
+- 与现有 imm_gen + alu 联调的 10 个计算结果
+- 不支持的指令（如 LD.D、SLLI.D、LU32I.D）必须无副作用
+
+注意：此处期望结果来自测试平台设计，尚未在你的 Vivado 环境实际运行验证。
+若运行失败，把完整 Tcl Console 的第一个 FAIL 或编译错误发给我，不要直接修改 ALU。
+
+重要下一步：
+向队员 A 发送 docs/instruction_spec.md 第 4.3 节的端口表，
+确认未来分支和算术指令所需的额外译码输出，避免两人并行修改共同 decoder.v。

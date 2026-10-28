@@ -1,6 +1,6 @@
 # LoongArch-Pipeline-CPU 指令规格表（队员 B 草稿）
 
-> 文档版本：V0.2（待队员 A、B 共同审核）  
+> 文档版本：V0.3（B 组 13 指令机器码已核对；公共接口待 A/B 审核）  
 > 目标：32 位 LoongArch 指令子集 CPU  
 > 工具：Vivado 2019.1；目标器件 `xc7a35tcsg324-1`  
 > 队员 B 分支：`feature/memory`  
@@ -122,6 +122,63 @@ end
 
 掩码 `32'hFFFF8000` 保留高 17 位固定编码，忽略低 15 位的三个寄存器编号。该代码仅演示匹配方式，不是完整 `decoder.v`。
 
+
+### 4.2 全部 13 条指令的机器码匹配表（阶段一）
+
+本表的 `Match` 和 `Mask` 已按 GNU Binutils LoongArch 指令表核对。识别条件为：
+
+```verilog
+(inst & MASK) == MATCH
+```
+
+| 指令 | Match | Mask | 格式 |
+|---|---|---|---|
+| `NOR` | `32'h00140000` | `32'hFFFF8000` | 3R |
+| `AND` | `32'h00148000` | `32'hFFFF8000` | 3R |
+| `OR` | `32'h00150000` | `32'hFFFF8000` | 3R |
+| `XOR` | `32'h00158000` | `32'hFFFF8000` | 3R |
+| `ANDI` | `32'h03400000` | `32'hFFC00000` | 2RI12 |
+| `ORI` | `32'h03800000` | `32'hFFC00000` | 2RI12 |
+| `XORI` | `32'h03C00000` | `32'hFFC00000` | 2RI12 |
+| `SLLI.W` | `32'h00408000` | `32'hFFFF8000` | 2RI5（17 位固定字段） |
+| `SRLI.W` | `32'h00448000` | `32'hFFFF8000` | 2RI5（17 位固定字段） |
+| `SRAI.W` | `32'h00488000` | `32'hFFFF8000` | 2RI5（17 位固定字段） |
+| `LU12I.W` | `32'h14000000` | `32'hFE000000` | 1RI20 |
+| `LD.W` | `32'h28800000` | `32'hFFC00000` | 2RI12 |
+| `ST.W` | `32'h29800000` | `32'hFFC00000` | 2RI12 |
+
+注：上表的 `Mask` 指出用于识别指令的固定位；寄存器和立即数位不参与匹配。移位立即数虽然使用 `inst[14:10]`，但高位固定编码与普通 3R 指令一样需要精确匹配。
+
+#### 官方与工具链参考
+
+- [LoongArch Reference Manual, Volume 1](https://loongson.github.io/LoongArch-Documentation/LoongArch-Vol1-EN.html)
+- [GNU Binutils loongarch-opc.c 指令匹配表](https://gnu.googlesource.com/binutils-gdb/+/150bfae1d719a3b5c12edc780f0b360a1056b802/opcodes/loongarch-opc.c)
+
+### 4.3 阶段一译码器 `decoder.v` 建议接口
+
+以下接口用于先独立验证队员 B 的 13 条指令，后续队员 A 的分支/算术指令需要在双方商定后统一扩展，而不是直接覆盖本文件。
+
+| 输出信号 | 宽度 | 作用 |
+|---|---:|---|
+| `rs1_addr` | 5 | 第一源寄存器地址，使用 `rj` |
+| `rs2_addr` | 5 | 第二源寄存器地址；普通 3R 使用 `rk`，`ST.W` 使用 `rd` 字段 |
+| `rd_addr` | 5 | 目的寄存器字段；`ST.W` 无寄存器写回 |
+| `rs1_used` | 1 | 第一读端口确实需要读取 |
+| `rs2_used` | 1 | 第二读端口确实需要读取 |
+| `alu_op` | 4 | 使用 `cpu_defs.vh` 中定义的 ALU 控制码 |
+| `imm_sel` | 3 | 选择当前 `imm_gen.v` 的立即数格式 |
+| `alu_src_imm` | 1 | 1 表示 ALU B 输入选择立即数，0 表示选择寄存器值 |
+| `reg_write` | 1 | 寄存器写回允许 |
+| `mem_read` | 1 | 是加载指令 |
+| `mem_write` | 1 | 是存储指令；连接 `dmem.we` 时应受有效执行/流水线控制 |
+| `wb_sel_mem` | 1 | 1 表示写回数据来自数据存储器 |
+| `valid` | 1 | 是否识别为阶段一支持的指令 |
+
+特别注意：`ST.W` 在 LoongArch 指令中把待存数据源寄存器编号放在 `inst[4:0]`，因此译码器需输出 `rs2_addr=inst[4:0]`，并把该读口的数据送给存储器 `wdata`。不能把 `inst[14:10]` 误当成 `ST.W` 的第二源寄存器。
+
+非法/尚未实现的指令：`valid=0`，并且 `reg_write=0`、`mem_write=0`、`mem_read=0`，从而避免意外副作用。当前 `decoder.v` 是组合逻辑模块，本身不生成 PC、流水线停顿或分支控制。
+
+`rd_addr` 对 `ST.W` 仍显示指令的低 5 位字段；但 `reg_write=0`，下游不得执行寄存器写入。写 `r0` 的禁止规则最终由寄存器堆统一保障。
 
 ## 5. 队员 B 的 13 条指令控制需求表
 
@@ -253,8 +310,8 @@ module imm_gen (
 
 以下事项未完成共同审核前，不应据此直接编写最终译码器：
 
-- [ ] 对全部 13 条指令逐条复核固定 opcode、匹配掩码及完整 32 位编码；当前第 4.1 节仅整理了 AND、OR、NOR、XOR 四条，仍需队员 A 复核。
-- [ ] 队员 A 复核第 4.1 节中 `AND`、`OR`、`NOR`、`XOR` 的 Match/Mask、字段和 `NOR` 操作数顺序。
+- [x] 已从 GNU Binutils LoongArch 指令表核对队员 B 的 13 条指令 Match/Mask（见第 4.2 节）。
+- [ ] 队员 A 复核第 4.2 节的完整匹配表及译码器输出接口；再共同确定剩余指令的编码与扩展方案。
 - [ ] `LD.W`、`ST.W` 的寄存器字段解释和数据通路映射。
 - [ ] `decoder.v` 输出端口、位宽、默认行为和非法指令处理。
 - [ ] 寄存器堆读写接口及 `r0` 处理方式。
