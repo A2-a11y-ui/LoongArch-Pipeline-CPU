@@ -1,0 +1,16 @@
+--- old/tb_ifetch_idex_integration_v09.v
++++ new/tb_ifetch_idex_integration_v09.v
+@@ -661,9 +661,11 @@
+         $display("CASE 22: external backpressure holds real ID/EX 19-field state");
+         reset_to_pc(32'h00000100);
+         wait_ex_valid("valid ID/EX before external backpressure");
++        // wait_ex_valid returned after a negedge. Another posedge can update
++        // ID/EX before the next negedge; take the snapshot AFTER stall asserts.
++        @(negedge clk); id_can_advance=0;
++        #1;
+         held_pc=ex_pc; held_inst=ex_inst;
+-        @(negedge clk); id_can_advance=0;
+-        #1;
+         verify(idex_stall_effective && !id_can_advance_effective,
+                "external backpressure stalls IF/ID and ID/EX");
+         for(k=0;k<3;k=k+1) begin

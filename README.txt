@@ -1,0 +1,1 @@
+V0.9 CASE 22 时序修复：等待下一个 negedge 并设置 id_can_advance=0 后，再记录 held_pc/held_inst；避免旧快照与新 ID/EX 状态比较。仅修改 tb/tb_ifetch_idex_integration_v09.v；不改变 RTL，也不删除任何断言。请替换文件后在 Vivado 2019.1 重新仿真，核对 Total errors 与 ALL TESTS PASSED。
