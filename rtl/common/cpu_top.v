@@ -1,8 +1,7 @@
-// Formal single-cycle CPU integration entry (baseline, 18 instructions).
-// Derived from the cpu_top_candidate validated with 397 checks.
-// The shared Decoder V1.2 extension is not merged yet: instantiate the validated
-// decoder_v2 until both contributors approve the final decoder.v interface.
-// NOT a five-stage pipeline. No hazards/Cache implemented in this version.
+// Official single-cycle CPU integration for 27 supported LA32 instructions.
+// PR #6 decoder.v is instantiated; all other datapath connections are unchanged.
+// This is NOT a five-stage pipeline and does NOT contain I-Cache or hazard logic.
+// Validated baselines: 13-instruction and branch regression test suites (to rerun).
 module cpu_top #(
     parameter IMEM_INIT_FILE = ""  // optional $readmemh machine code image
 ) (
@@ -25,7 +24,7 @@ module cpu_top #(
     output wire [31:0] dbg_rs1_data,
     output wire [31:0] dbg_rs2_data
 );
-    // One unified 18-instruction decoder.
+    // One unified 27-instruction decoder (13 base + 5 branch + 9 arithmetic).
     wire [4:0] rs1_addr, rs2_addr, waddr;
     wire rs1_used, rs2_used;
     wire [3:0] alu_op;
@@ -43,7 +42,7 @@ module cpu_top #(
         .addr(pc), .inst(inst), .addr_valid(fetch_addr_valid)
     );
 
-    decoder_v2 u_decoder (
+    decoder u_decoder (
         .inst(inst), .rs1_addr(rs1_addr), .rs2_addr(rs2_addr),
         .rd_addr(waddr), .rs1_used(rs1_used), .rs2_used(rs2_used),
         .alu_op(alu_op), .imm_sel(selected_imm_sel),
