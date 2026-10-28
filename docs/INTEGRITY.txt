@@ -1,0 +1,3 @@
+Reference modules are exact copies of existing V0.3 artifacts; do not overwrite a validated working repo.
+imem_latency.v SHA256=286527a420565c3d7dc03a858207bed00aea3b1b55a51050ae09ebb4164ddc3b
+icache_2way_latency.v SHA256=54070c1613a54b81a12bb7fc9718b475bc1c41c01e06ea9d2a17db1c12a5acc3
