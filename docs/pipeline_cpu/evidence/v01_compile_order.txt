@@ -1,0 +1,21 @@
+report_compile_order -of_objects [get_filesets sim_1] -used_in simulation
+INFO: [Vivado 12-3442] The output from report_compile_order is primarily targeted for human readability and ease of use. The 'get_files' command, with the -compile_order and -used_in options, produces this same information in a format that is better suited for automated scripts.
+Source compile order for 'simulation' with fileset 'sim_1' in source management mode 'All' and simulation language 'Mixed':
+Index  File Name                Used_In      File_Type  Library         Ngc Wrapper  Full Path Name
+-----  -----------------------  -----------  ---------  --------------  -----------  -----------------------------------------------------------------------------
+1      alu.v                    Synth & Sim  Verilog    xil_defaultlib  No           D:/CPU_Project/LoongArch-Pipeline-CPU/rtl/alu_branch/alu.v
+2      decoder.v                Synth & Sim  Verilog    xil_defaultlib  No           D:/CPU_Project/LoongArch-Pipeline-CPU/rtl/common/decoder.v
+3      ex_mem_reg.v             Synth & Sim  Verilog    xil_defaultlib  No           D:/CPU_Project/LoongArch-Pipeline-CPU/rtl/common/ex_mem_reg.v
+4      id_ex_reg.v              Synth & Sim  Verilog    xil_defaultlib  No           D:/CPU_Project/LoongArch-Pipeline-CPU/rtl/common/id_ex_reg.v
+5      if_id_reg.v              Synth & Sim  Verilog    xil_defaultlib  No           D:/CPU_Project/LoongArch-Pipeline-CPU/rtl/common/if_id_reg.v
+6      imm_gen.v                Synth & Sim  Verilog    xil_defaultlib  No           D:/CPU_Project/LoongArch-Pipeline-CPU/rtl/memory_cache/imm_gen.v
+7      mem_wb_reg.v             Synth & Sim  Verilog    xil_defaultlib  No           D:/CPU_Project/LoongArch-Pipeline-CPU/rtl/common/mem_wb_reg.v
+8      pipeline_cpu_core_v01.v  Synth & Sim  Verilog    xil_defaultlib  No           D:/CPU_Project/LoongArch-Pipeline-CPU/rtl_test_only/pipeline_cpu_core_v01.v
+9      regfile.v                Synth & Sim  Verilog    xil_defaultlib  No           D:/CPU_Project/LoongArch-Pipeline-CPU/rtl/common/regfile.v
+10     tb_pipeline_cpu_basic.v  Synth & Sim  Verilog    xil_defaultlib  No           D:/CPU_Project/LoongArch-Pipeline-CPU/tb/pipeline_cpu/tb_pipeline_cpu_basic.v
+
+
+Missing instances for 'simulation' with fileset 'sim_1':
+Index  Instance Path  File Path  Line
+-----  -------------  ---------  ----
+< empty >
