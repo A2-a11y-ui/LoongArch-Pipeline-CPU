@@ -1,0 +1,17 @@
+# Vivado sim_1 预期源码列表（不是 Vivado 实际 compile_order 输出）
+rtl/alu_branch/alu.v
+rtl/common/decoder.v
+rtl/common/ex_mem_reg.v
+rtl/common/forwarding_unit.v
+rtl/common/id_ex_reg.v
+rtl/common/if_id_reg.v
+rtl/memory_cache/imm_gen.v
+rtl/common/load_use_hazard_unit.v
+rtl/common/mem_wb_reg.v
+rtl/common/regfile.v
+rtl/memory_cache/dmem.v
+rtl_test_only/branch_resolve_v04.v
+rtl_test_only/pipeline_cpu_core_v04.v
+tb/pipeline_cpu/tb_pipeline_cpu_core_v04.v
+# Decoder includes cpu_defs.vh; ensure it is visible in Vivado project.
+# Confirm report_compile_order and < empty > under Missing instances.

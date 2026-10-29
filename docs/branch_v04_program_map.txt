@@ -1,0 +1,69 @@
+# CPU V0.4 branch test program (ROM indexed by PC, 32-bit hex words)
+
+# Lines marked WRONG PATH must never architecturally commit.
+idx  PC          word      asm      note
+000  00001000    02801401  addi   (1, 0, 5)                          r1=5
+001  00001004    02801402  addi   (2, 0, 5)                          r2=5
+002  00001008    58000c22  beq    (1, 2, 'BEQ_T')                    taken; compare EX/MEM and MEM/WB results
+003  0000100c    29810001  st     (1, 0, 64)                         WRONG PATH store
+004  00001010    02818c03  addi   (3, 0, 99)                         WRONG PATH WB
+005  00001014    02801c03  addi   (3, 0, 7)                          r3=7
+006  00001018    5c000c62  bne    (3, 2, 'BNE_T')                    taken with EX/MEM forward
+007  0000101c    29811003  st     (3, 0, 68)                         WRONG PATH store
+008  00001020    02818804  addi   (4, 0, 98)                         WRONG PATH WB
+009  00001024    5c00d042  bne    (2, 2, 'UNREACHABLE')              not taken
+010  00001028    02802404  addi   (4, 0, 9)                          r4=9
+011  0000102c    5800c844  beq    (2, 4, 'UNREACHABLE')              not taken
+012  00001030    02802c05  addi   (5, 0, 11)                         r5=11
+013  00001034    50000c00  b      ('B_TARGET',)                      unconditional jump
+014  00001038    29812005  st     (5, 0, 72)                         WRONG PATH store
+015  0000103c    02818406  addi   (6, 0, 97)                         WRONG PATH WB
+016  00001040    54000c00  bl     ('BL_TARGET',)                     BL: link r1=PC+4
+017  00001044    29813005  st     (5, 0, 76)                         WRONG PATH store
+018  00001048    02818007  addi   (7, 0, 96)                         WRONG PATH WB
+019  0000104c    02800028  addi   (8, 1, 0)                          r8=BL link
+020  00001050    1400002c  lu12i  (12, 1)                            r12=0x1000
+021  00001054    0281918c  addi   (12, 12, 'JIRL_TARGET_OFF')        r12=JIRL target; RAW
+022  00001058    4c00018d  jirl   (13, 12, 0)                        JIRL link r13, immediate EX/MEM base forward
+023  0000105c    29814003  st     (3, 0, 80)                         WRONG PATH store
+024  00001060    02817c0e  addi   (14, 0, 95)                        WRONG PATH WB
+025  00001064    028001af  addi   (15, 13, 0)                        r15=JIRL link
+026  00001068    29800003  st     (3, 0, 0)                          ST r3 to addr0
+027  0000106c    28800010  ld     (16, 0, 0)                         LD r16=7
+028  00001070    58000e03  beq    (16, 3, 'AFTER_LOAD')              taken, load-use branch hazard
+029  00001074    29815010  st     (16, 0, 84)                        WRONG PATH store
+030  00001078    02817811  addi   (17, 0, 94)                        WRONG PATH WB
+031  0000107c    02800412  addi   (18, 0, 1)                         r18=1
+032  00001080    58007640  beq    (18, 0, 'UNREACHABLE')             not taken
+033  00001084    29801012  st     (18, 0, 4)                         ST 1 at addr4
+034  00001088    28801013  ld     (19, 0, 4)                         LD r19=1
+035  0000108c    02801274  addi   (20, 19, 4)                        load-use stall r20=5
+036  00001090    02bffa95  addi   (21, 20, -2)                       r21=3
+037  00001094    29802015  st     (21, 0, 8)                         ST 3 at addr8
+038  00001098    02800016  addi   (22, 0, 0)                         r22 loop count0
+039  0000109c    02800c17  addi   (23, 0, 3)                         r23 limit3
+040  000010a0    028006d6  addi   (22, 22, 1)                        loop++
+041  000010a4    5ffffed7  bne    (22, 23, 'LOOP')                   backward signed offset; 2 taken 1 not
+042  000010a8    028006d8  addi   (24, 22, 1)                        r24=4
+043  000010ac    29803018  st     (24, 0, 12)                        ST 4 at addr12
+044  000010b0    50000c00  b      ('FINAL',)                         jump over wrong store
+045  000010b4    29816018  st     (24, 0, 88)                        WRONG PATH store
+046  000010b8    02817419  addi   (25, 0, 93)                        WRONG PATH WB
+047  000010bc    2880301a  ld     (26, 0, 12)                        LD 4
+048  000010c0    0280075b  addi   (27, 26, 1)                        load-use r27=5
+049  000010c4    58003360  beq    (27, 0, 'UNREACHABLE')             not taken
+050  000010c8    0280141c  addi   (28, 0, 5)                         r28=5
+051  000010cc    5c002b7c  bne    (27, 28, 'UNREACHABLE')            not taken
+052  000010d0    2980401b  st     (27, 0, 16)                        ST 5 at addr16
+053  000010d4    02800c1d  addi   (29, 0, 3)                         r29=3
+054  000010d8    58000fb7  beq    (29, 23, 'END')                    taken; r29 forwarded
+055  000010dc    2981701d  st     (29, 0, 92)                        WRONG PATH store
+056  000010e0    0281701e  addi   (30, 0, 92)                        WRONG PATH WB
+057  000010e4    0280041f  addi   (31, 0, 1)                         r31=1
+058  000010e8    02813400  addi   (0, 0, 77)                         r0 suppressed
+059  000010ec    ffffffff  raw    (4294967295,)                      illegal, suppressed
+060  000010f0    2980501f  st     (31, 0, 20)                        final ST 1 at addr20
+061  000010f4    ffffffff  raw    (4294967295,)                      trailing illegal, expected filtered
+
+# Dynamic program: 50 instructions executed, 27 WB, 6 stores, 16 branches, 10 taken.
+# Counts include repeated LOOP PC instances; wrong-path opcodes remain in ROM but are squashed.
