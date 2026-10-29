@@ -1,0 +1,66 @@
+﻿index,pc,machine_hex,mnemonic,operands,executed_dynamic,description
+0,0x00001000,0x02801002,addi,"(2, 0, 4)",1,producer r2=4
+1,0x00001004,0x02801003,addi,"(3, 0, 4)",1,producer r3=4
+2,0x00001008,0x58000C62,beq,"(2, 3, 'T1')",1,"taken, EX/MEM and MEM/WB input forwarding"
+3,0x0000100C,0x29810002,st,"(2, 0, 64)",0,WRONG PATH store 64
+4,0x00001010,0x02818C04,addi,"(4, 0, 99)",0,WRONG PATH write r4
+5,0x00001014,0x02802404,addi,"(4, 0, 9)",1,
+6,0x00001018,0x5C000C44,bne,"(4, 2, 'T2')",1,taken with EX/MEM operand
+7,0x0000101C,0x29811004,st,"(4, 0, 68)",0,WRONG PATH store 68
+8,0x00001020,0x02813405,addi,"(5, 0, 77)",0,WRONG PATH write r5
+9,0x00001024,0x5C001462,bne,"(2, 3, 'NEVER1')",1,not taken
+10,0x00001028,0x02800805,addi,"(5, 0, 2)",1,
+11,0x0000102C,0x58000CA4,beq,"(4, 5, 'NEVER1')",1,not taken
+12,0x00001030,0x50000C00,b,"('T3',)",1,unconditional
+13,0x00001034,0x29812005,st,"(5, 0, 72)",0,WRONG PATH store 72
+14,0x00001038,0x02816006,addi,"(6, 0, 88)",0,WRONG PATH write r6
+15,0x0000103C,0x54000C00,bl,"('T4',)",1,link r1=branch PC+4
+16,0x00001040,0x29813004,st,"(4, 0, 76)",0,WRONG PATH store 76
+17,0x00001044,0x02805807,addi,"(7, 0, 22)",0,WRONG PATH write r7
+18,0x00001048,0x02800028,addi,"(8, 1, 0)",1,consume BL link
+19,0x0000104C,0x14000029,lu12i,"(9, 1)",1,r9=0x1000
+20,0x00001050,0x02818129,addi,"(9, 9, ('offset', 'JT'))",1,r9=target JIRL
+21,0x00001054,0x4C00012A,jirl,"(10, 9, 0)",1,link r10=JIRL PC+4
+22,0x00001058,0x29814004,st,"(4, 0, 80)",0,WRONG PATH store 80
+23,0x0000105C,0x0280DC0B,addi,"(11, 0, 55)",0,WRONG PATH write r11
+24,0x00001060,0x0280014C,addi,"(12, 10, 0)",1,consume JIRL link
+25,0x00001064,0x29800004,st,"(4, 0, 0)",1,store 9
+26,0x00001068,0x2880000D,ld,"(13, 0, 0)",1,load 9
+27,0x0000106C,0x58000C8D,beq,"(13, 4, 'T5')",1,taken Load->Branch; stall
+28,0x00001070,0x2981500D,st,"(13, 0, 84)",0,WRONG PATH store 84
+29,0x00001074,0x0281680E,addi,"(14, 0, 90)",0,WRONG PATH write r14
+30,0x00001078,0x0280000F,addi,"(15, 0, 0)",1,loop counter
+31,0x0000107C,0x02800C10,addi,"(16, 0, 3)",1,loop limit
+32,0x00001080,0x028005EF,addi,"(15, 15, 1)",3,increment loop
+33,0x00001084,0x5FFFFE0F,bne,"(15, 16, 'LOOP')",3,backward 2 taken then not taken
+34,0x00001088,0x2980100F,st,"(15, 0, 4)",1,store loop value 3
+35,0x0000108C,0x28801011,ld,"(17, 0, 4)",1,
+36,0x00001090,0x02801632,addi,"(18, 17, 5)",1,"Load->ADDI stall, result 8"
+37,0x00001094,0x29802012,st,"(18, 0, 8)",1,
+38,0x00001098,0x28802013,ld,"(19, 0, 8)",1,
+39,0x0000109C,0x5C000E53,bne,"(19, 18, 'NEVER2')",1,"not taken, load dependency"
+40,0x000010A0,0x58000E53,beq,"(19, 18, 'T6')",1,taken
+41,0x000010A4,0x29816013,st,"(19, 0, 88)",0,WRONG PATH store 88
+42,0x000010A8,0x02810814,addi,"(20, 0, 66)",0,WRONG PATH r20
+43,0x000010AC,0x02801415,addi,"(21, 0, 5)",1,
+44,0x000010B0,0x29803015,st,"(21, 0, 12)",1,
+45,0x000010B4,0x28803016,ld,"(22, 0, 12)",1,
+46,0x000010B8,0x29804016,st,"(22, 0, 16)",1,Load->Store data stall
+47,0x000010BC,0x28804017,ld,"(23, 0, 16)",1,
+48,0x000010C0,0x02800AF8,addi,"(24, 23, 2)",1,7
+49,0x000010C4,0x29805018,st,"(24, 0, 20)",1,
+50,0x000010C8,0x02806019,addi,"(25, 0, 24)",1,base pointer
+51,0x000010CC,0x29801338,st,"(24, 25, 4)",1,store [base+4] addr28
+52,0x000010D0,0x2880133A,ld,"(26, 25, 4)",1,read back
+53,0x000010D4,0x5C00131A,bne,"(26, 24, 'NEVER3')",1,not taken
+54,0x000010D8,0x0280041B,addi,"(27, 0, 1)",1,
+55,0x000010DC,0x58000F7B,beq,"(27, 27, 'FINAL')",1,taken immediate EXMEM dependency
+56,0x000010E0,0x2981701B,st,"(27, 0, 92)",0,WRONG PATH store 92
+57,0x000010E4,0x0280B01C,addi,"(28, 0, 44)",0,WRONG PATH r28
+58,0x000010E8,0x0280041D,addi,"(29, 0, 1)",1,
+59,0x000010EC,0x02813400,addi,"(0, 0, 77)",1,r0 suppressed
+60,0x000010F0,0xFFFFFFFF,illegal,(),1,invalid filtered
+61,0x000010F4,0x2980801D,st,"(29, 0, 32)",1,
+62,0x000010F8,0x2880801E,ld,"(30, 0, 32)",1,
+63,0x000010FC,0x02800BDF,addi,"(31, 30, 2)",1,Load->ADDI result 3
+64,0x00001100,0xFFFFFFFF,illegal,(),1,invalid filtered
