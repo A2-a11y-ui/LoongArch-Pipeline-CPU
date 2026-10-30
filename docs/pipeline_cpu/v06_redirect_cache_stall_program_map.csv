@@ -1,0 +1,13 @@
+﻿index,virtual_pc,physical_imem_addr,machine_hex,mnemonic,operands,expected_effect
+0,0x00001000,0x00000000,02801402,ADDI.W,r2=5,"A,B: WB r2=5"
+1,0x00001004,0x00000004,02801403,ADDI.W,r3=5,A: WB r3=5; B: killed
+2,0x00001008,0x00000008,02800804,ADDI.W,r4=2,A: WB r4=2; B: killed
+3,0x0000100C,0x0000000C,58001443,BEQ,"r2,r3,+20",A: taken to 0x1020; B: killed
+4,0x00001010,0x00000010,29802002,ST.W,"r2,8(r0)","wrong path, must not Store"
+5,0x00001014,0x00000014,02818C07,ADDI.W,r7=99,"wrong path, must not WB"
+6,0x00001018,0x00000018,29803002,ST.W,"r2,12(r0)","wrong path, must not Store"
+7,0x0000101C,0x0000001C,02813408,ADDI.W,r8=77,"wrong path, must not WB"
+8,0x00001020,0x00000020,02802405,ADDI.W,r5=9,"A,B: WB r5=9, target delivered once"
+9,0x00001024,0x00000024,29800005,ST.W,"r5,0(r0)","A,B: Store addr0 data9"
+10,0x00001028,0x00000028,028004A6,ADDI.W,r6=r5+1,"A,B: WB r6=10"
+11,0x0000102C,0x0000002C,29801006,ST.W,"r6,4(r0)","A,B: Store addr4 data10"
