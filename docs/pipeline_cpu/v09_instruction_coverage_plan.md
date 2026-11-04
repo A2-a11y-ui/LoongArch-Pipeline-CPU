@@ -69,6 +69,19 @@
 | 33 | `MOD.W` | MDU乘除法 | `0xFFFF8000` | `0x00208000` | `0x00208823` | WB: r3=0x00000002 |
 | 34 | `MOD.WU` | MDU乘除法 | `0xFFFF8000` | `0x00218000` | `0x00218823` | WB: r3=0x00000002 |
 
+### B/BL 的 I26 分段立即数核对（PR #39 审核补充）
+
+LoongArch B/BL 将 26 位立即数分散在指令的两个字段中：`offs26 = {inst[9:0], inst[25:10]}`。
+因此字节偏移为 `SignExtend({offs26, 2'b00})`，目标地址以**本条分支指令 PC** 为基准。
+
+- `PC=0x00001000`、目标 `0x0000100C`：偏移 `+12`，`offs26=3`，低 16 位字段 `inst[25:10]=16'h0003`、高 10 位字段 `inst[9:0]=0`。
+- 正确 B 示例是 `32'h50000C00`；正确 BL 示例是 `32'h54000C00`，并且 BL 应写回 `r1=0x00001004`。
+- `32'h50000003` / `32'h54000003` 会把 3 写到 `inst[9:0]`，解出 `offs26=26'h30000`，字节偏移为 `0x000C0000`，目标 **`0x000C1000`**，并不是 `0x100C`。
+
+此结论与已有 `rtl/memory_cache/imm_gen.v` 的 `imm_sel=6` 拼接逻辑一致，且符合 LoongArch 官方 B/BL 语义。
+
+本次补充的 Decoder + Immediate Generator 测试将直接检查这两种编码及相应目标值；**该检查依然不是 V0.9 CPU 的真实分支执行验证**。
+
 ## 三、为什么第一批先做“独立 Decoder 测试”
 
 已新增 `tb/pipeline_cpu/tb_v09_decode_inventory.v`，实例化**原有正式 `decoder` 与辅助 `mdu_decode_v08`**，使用 34 条机器码逐条验证：
@@ -78,11 +91,11 @@
 3. 三个非法字不会错误触发两套译码。
 4. 每个字段错误均打印独立 FAIL；错误使用 `$fatal(1,...)` 使自动回归失败退出。
 
-**本项只验证组合译码结果**，不会模拟五级流水线，也不会验证真实运算、分支目标、WB/Store 次数或 FPGA 实机行为。
+**本项验证 Decoder 和 Immediate Generator 组合输出**，包括 B/BL 偏移与计算得到的目标 PC；不会模拟五级流水线，也不会验证真实分支跳转、WB/Store 次数或 FPGA 实机行为。
 
 ### Vivado 2019.1 使用步骤
 
-1. 保留原有 `rtl/common/decoder.v` 和 `rtl_test_only/mdu_decode_v08.v` 作为 Design Sources；本包**不提供、不覆盖**这两个模块。
+1. 保留原有 `rtl/common/decoder.v`、`rtl_test_only/mdu_decode_v08.v` 和 `rtl/memory_cache/imm_gen.v` 作为 Design Sources；本包**不提供、不覆盖**这三个模块。
 2. 确认 `cpu_defs.vh` 的原有 include 引用在工程中可解析；不修改稳定 Decoder 的 include 行。
 3. 加入 `tb/pipeline_cpu/tb_v09_decode_inventory.v` 作为 Simulation Sources。
 4. Set as Top：`tb_v09_decode_inventory`，运行 Behavioral Simulation，`run all`。

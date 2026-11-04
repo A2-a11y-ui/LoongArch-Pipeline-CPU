@@ -24,8 +24,8 @@
 23 BEQ        0x58000C22  r1=12; r2=12 -> taken; target PC=0x100C; no WB
 24 BNE        0x5C000C22  r1=12; r2=5 -> taken; target PC=0x100C; no WB
 25 JIRL       0x4C000C23  r1=0x200 -> target PC=0x20C; WB r3=0x1004
-26 B          0x50000C00  PC=0x1000 -> target PC=0x100C; no WB
-27 BL         0x54000C00  PC=0x1000 -> target PC=0x100C; WB r1=0x1004
+26 B          0x50000C00  offs26=3 (inst[25:10]=3, inst[9:0]=0); PC=0x1000 -> target PC=0x100C; no WB
+27 BL         0x54000C00  offs26=3 (inst[25:10]=3, inst[9:0]=0); PC=0x1000 -> target PC=0x100C; WB r1=0x1004
 28 MUL.W      0x001C0823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x0000003C
 29 MULH.W     0x001C8823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x00000000
 30 MULH.WU    0x001D0823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x00000000
@@ -33,3 +33,6 @@
 32 DIV.WU     0x00210823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x00000002
 33 MOD.W      0x00208823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x00000002
 34 MOD.WU     0x00218823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x00000002
+
+# IMPORTANT I26 note: for B/BL, offs26 = {inst[9:0], inst[25:10]}, byte_offset = SignExtend({offs26,2'b00}).
+# Counterexample: 0x50000003 and 0x54000003 give byte_offset=0x000C0000, target PC=0x000C1000 from PC=0x1000.

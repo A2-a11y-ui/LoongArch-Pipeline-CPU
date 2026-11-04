@@ -24,8 +24,8 @@ ST.W,访存,I12,0xFFC00000,0x29800000,0x29803022,0x00001000,rd=r2;rj=r1;immediat
 BEQ,分支跳转,I16,0xFC000000,0x58000000,0x58000C22,0x00001000,rd=r2;rj=r1;immediate=3,r1=12; r2=12,BRANCH,taken; target PC=0x100C; no WB,decoder(5).v,,待V0.9整机验证
 BNE,分支跳转,I16,0xFC000000,0x5C000000,0x5C000C22,0x00001000,rd=r2;rj=r1;immediate=3,r1=12; r2=5,BRANCH,taken; target PC=0x100C; no WB,decoder(5).v,,待V0.9整机验证
 JIRL,分支跳转,I16,0xFC000000,0x4C000000,0x4C000C23,0x00001000,rd=r3;rj=r1;immediate=3,r1=0x200,BRANCH+WB,target PC=0x20C; WB r3=0x1004,decoder(5).v,,待V0.9整机验证
-B,分支跳转,I26,0xFC000000,0x50000000,0x50000C00,0x00001000,rd=r0;offset_or_u20=3,PC=0x1000,BRANCH,target PC=0x100C; no WB,decoder(5).v,,待V0.9整机验证
-BL,分支跳转,I26,0xFC000000,0x54000000,0x54000C00,0x00001000,rd=r0;offset_or_u20=3,PC=0x1000,BRANCH+WB,target PC=0x100C; WB r1=0x1004,decoder(5).v,,待V0.9整机验证
+B,分支跳转,I26,0xFC000000,0x50000000,0x50000C00,0x00001000,offs26=3;inst[25:10]=3;inst[9:0]=0,PC=0x1000,BRANCH,byte offset=+12; target PC=0x100C; no WB,decoder(5).v,,待V0.9整机验证
+BL,分支跳转,I26,0xFC000000,0x54000000,0x54000C00,0x00001000,offs26=3;inst[25:10]=3;inst[9:0]=0,PC=0x1000,BRANCH+WB,byte offset=+12; target PC=0x100C; WB r1=0x1004,decoder(5).v,,待V0.9整机验证
 MUL.W,MDU乘除法,3R,0xFFFF8000,0x001C0000,0x001C0823,0x00001000,rd=r3;rj=r1;rk=r2,"r1=0x0000000C, r2=0x00000005; other registers arbitrary",WB,r3=0x0000003C,mdu_decode_v08.v + CPU overlay,000,待V0.9整机验证
 MULH.W,MDU乘除法,3R,0xFFFF8000,0x001C8000,0x001C8823,0x00001000,rd=r3;rj=r1;rk=r2,"r1=0x0000000C, r2=0x00000005; other registers arbitrary",WB,r3=0x00000000,mdu_decode_v08.v + CPU overlay,001,待V0.9整机验证
 MULH.WU,MDU乘除法,3R,0xFFFF8000,0x001D0000,0x001D0823,0x00001000,rd=r3;rj=r1;rk=r2,"r1=0x0000000C, r2=0x00000005; other registers arbitrary",WB,r3=0x00000000,mdu_decode_v08.v + CPU overlay,010,待V0.9整机验证

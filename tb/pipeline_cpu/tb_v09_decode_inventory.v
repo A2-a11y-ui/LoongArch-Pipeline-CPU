@@ -18,6 +18,9 @@ module tb_v09_decode_inventory;
         .mem_write(mem_write),.wb_sel_mem(wb_sel_mem),.valid(valid),
         .branch_type(branch_type),.wb_sel(wb_sel));
     mdu_decode_v08 u_mdu_decoder(.inst(inst),.is_mdu(is_mdu),.mdu_op(mdu_op));
+    // This verifies the actual I26 offset from imm_gen, not just decoder.imm_sel.
+    wire [31:0] branch_byte_offset;
+    imm_gen u_imm_gen(.inst(inst),.imm_sel(imm_sel),.imm(branch_byte_offset));
     task eq32;
         input [8*32-1:0] what;
         input [31:0] got;
@@ -62,6 +65,23 @@ module tb_v09_decode_inventory;
             eq32("invalid base",valid,0); eq32("invalid mdu",is_mdu,0);
         end
     endtask
+    // Four additional branch-offset checks (B/BL x valid and counterexample).
+    // These cases check decoded offset and PC arithmetic, NOT a CPU executing a branch.
+    task check_b_target;
+        input [8*24-1:0] tag;
+        input [31:0] codeword;
+        input [2:0] e_br;
+        input [31:0] e_offset;
+        input [31:0] e_target;
+        begin
+            inst=codeword; #1; cases=cases+1;
+            eq32("branch_type",branch_type,e_br);
+            eq32("imm_sel",imm_sel,3'd6);
+            eq32("branch_byte_offset",branch_byte_offset,e_offset);
+            eq32("PC+branch_offset",(32'h00001000+branch_byte_offset),e_target);
+            $display("CHECK B/BL offset %-12s inst=%h offset=%h target=%h", tag, inst, branch_byte_offset, (32'h00001000+branch_byte_offset));
+        end
+    endtask
     initial begin
         inst=32'd0; cases=0; checks=0; errors=0;
         check_base("ADD.W",32'h00100823,5'd1,5'd2,5'd3,1'b1,1'b1,1'b1,1'b0,1'b0,4'd0,3'd0,3'd0,1'b0,2'd0);
@@ -91,6 +111,10 @@ module tb_v09_decode_inventory;
         check_base("JIRL",32'h4C000C23,5'd1,5'd0,5'd3,1'b1,1'b0,1'b1,1'b0,1'b0,4'd0,3'd5,3'd5,1'b0,2'd2);
         check_base("B",32'h50000C00,5'd0,5'd0,5'd0,1'b0,1'b0,1'b0,1'b0,1'b0,4'd0,3'd6,3'd3,1'b0,2'd0);
         check_base("BL",32'h54000C00,5'd0,5'd0,5'd1,1'b0,1'b0,1'b1,1'b0,1'b0,4'd0,3'd6,3'd4,1'b0,2'd2);
+        check_b_target("B plus12", 32'h50000C00, 3'd3, 32'h0000000C, 32'h0000100C);
+        check_b_target("BL plus12",32'h54000C00, 3'd4, 32'h0000000C, 32'h0000100C);
+        check_b_target("B shifted",32'h50000003, 3'd3, 32'h000C0000, 32'h000C1000);
+        check_b_target("BL shifted",32'h54000003,3'd4, 32'h000C0000, 32'h000C1000);
         check_mdu("MUL.W",32'h001C0823,3'b000);
         check_mdu("MULH.W",32'h001C8823,3'b001);
         check_mdu("MULH.WU",32'h001D0823,3'b010);
