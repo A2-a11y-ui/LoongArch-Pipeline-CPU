@@ -1,6 +1,10 @@
 # V0.9 Independent WB / Store Scoreboard — Interface & Contract
 
-**Status:** Candidate verification utility; not yet executed in Vivado 2019.1.
+Status: Self-test completed in Vivado 2019.1.
+Result: 11/11 self-test cases passed, 0 self-test failures.
+Simulation finished at 1471 ns.
+Expected scoreboard errors in negative test cases are intentional
+and are checked by the outer self-test.
 
 **Purpose:** Verify that a CPU emits the correct *architectural side effects*, not merely the correct numerical counts. This monitor is standalone, simulation-only Verilog-2001. No existing V0.1–V0.8 RTL or FPGA top is modified.
 
