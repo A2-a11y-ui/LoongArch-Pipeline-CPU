@@ -1,0 +1,35 @@
+# One encoded example per instruction; standalone decode vectors, NOT a sequential executable CPU program.
+01 ADD.W      0x00100823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x00000011
+02 SUB.W      0x00110823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x00000007
+03 SLT        0x00120823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x00000000
+04 SLTU       0x00128823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x00000000
+05 SLL.W      0x00170823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x00000180
+06 SRL.W      0x00178823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x00000000
+07 SRA.W      0x00180823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x00000000
+08 NOR        0x00140823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0xFFFFFFF2
+09 AND        0x00148823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x00000004
+10 OR         0x00150823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x0000000D
+11 XOR        0x00158823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x00000009
+12 ADDI.W     0x02BFF423  r1=0x0000000C -> r3=0x00000009
+13 SLTI       0x023FF423  r1=0x0000000C -> r3=0x00000000
+14 ANDI       0x03403C23  r1=0x0000000C -> r3=0x0000000C
+15 ORI        0x03803C23  r1=0x0000000C -> r3=0x0000000F
+16 XORI       0x03C03C23  r1=0x0000000C -> r3=0x00000003
+17 SLLI.W     0x00408823  r1=0x0000000C -> r3=0x00000030
+18 SRLI.W     0x00448823  r1=0x0000000C -> r3=0x00000003
+19 SRAI.W     0x00488823  r1=0x0000000C -> r3=0x00000003
+20 LU12I.W    0x142468A3  none -> r3=0x12345000
+21 LD.W       0x28802023  r1=0x40; RAM[0x48]=0x12345678 -> r3=0x12345678; read addr=0x48
+22 ST.W       0x29803022  r1=0x40; r2=0xDEADBEEF -> addr=0x4C; data=0xDEADBEEF; no WB
+23 BEQ        0x58000C22  r1=12; r2=12 -> taken; target PC=0x100C; no WB
+24 BNE        0x5C000C22  r1=12; r2=5 -> taken; target PC=0x100C; no WB
+25 JIRL       0x4C000C23  r1=0x200 -> target PC=0x20C; WB r3=0x1004
+26 B          0x50000C00  PC=0x1000 -> target PC=0x100C; no WB
+27 BL         0x54000C00  PC=0x1000 -> target PC=0x100C; WB r1=0x1004
+28 MUL.W      0x001C0823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x0000003C
+29 MULH.W     0x001C8823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x00000000
+30 MULH.WU    0x001D0823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x00000000
+31 DIV.W      0x00200823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x00000002
+32 DIV.WU     0x00210823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x00000002
+33 MOD.W      0x00208823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x00000002
+34 MOD.WU     0x00218823  r1=0x0000000C, r2=0x00000005; other registers arbitrary -> r3=0x00000002
