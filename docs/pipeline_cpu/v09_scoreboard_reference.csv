@@ -1,0 +1,7 @@
+type,order_within_type,pc_hex,rd_or_addr_hex,data_hex,meaning
+WB,0,0x00001000,r1,0x00000006,synthetic ADDI result
+WB,1,0x00001004,r2,0x00000003,synthetic ADDI result
+WB,2,0x00001008,r3,0x00000012,synthetic MUL result
+WB,3,0x0000100C,r4,0x00000015,synthetic ADD result
+STORE,0,0x00001010,0x00000004,0x00000012,synthetic memory side effect
+STORE,1,0x00001014,0x00000008,0x00000015,synthetic memory side effect
