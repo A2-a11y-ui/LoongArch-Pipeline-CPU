@@ -1,4 +1,3 @@
-
 module id_ex_reg (
     input  wire        clk,
     input  wire        rst,
@@ -56,11 +55,36 @@ module id_ex_reg (
     output reg         ex_mem_write
 );
 
-    // Priority: Reset > Flush > Stall > Capture
+    // ------------------------------------------------------------------
+    // Valid/control path
+    //
+    // Reset and flush only invalidate the pipeline slot.  In particular,
+    // FLUSH is deliberately kept off the wide payload-register reset path.
+    // Payload values are architecturally irrelevant whenever ex_valid=0.
+    // ------------------------------------------------------------------
     always @(posedge clk) begin
+        if (rst)
+            ex_valid <= 1'b0;
+        else if (flush)
+            ex_valid <= 1'b0;
+        else if (!stall)
+            ex_valid <= id_valid;
+    end
 
-        if (rst || flush) begin
-            ex_valid       <= 1'b0;
+    // ------------------------------------------------------------------
+    // Payload path
+    //
+    // Reset retains the original deterministic initialization behavior.
+    // On a normal non-stalled edge, capture the ID payload regardless of
+    // FLUSH.  If FLUSH is asserted on that edge, ex_valid is cleared above,
+    // so the captured payload is an invalid bubble and cannot cause side
+    // effects.  This intentionally removes FLUSH from the D/reset-enable
+    // logic of the wide payload register bank.
+    //
+    // During STALL, payload registers hold their previous values.
+    // ------------------------------------------------------------------
+    always @(posedge clk) begin
+        if (rst) begin
             ex_pc          <= 32'd0;
             ex_pc_plus4    <= 32'd0;
             ex_inst        <= 32'd0;
@@ -84,9 +108,7 @@ module id_ex_reg (
             ex_mem_read    <= 1'b0;
             ex_mem_write   <= 1'b0;
         end
-
         else if (!stall) begin
-            ex_valid       <= id_valid;
             ex_pc          <= id_pc;
             ex_pc_plus4    <= id_pc_plus4;
             ex_inst        <= id_inst;
@@ -110,9 +132,7 @@ module id_ex_reg (
             ex_mem_read    <= id_mem_read;
             ex_mem_write   <= id_mem_write;
         end
-
-        // Stall: hold all registered fields.
-
+        // STALL=1: retain payload.  FLUSH does not gate this bank.
     end
 
 endmodule
