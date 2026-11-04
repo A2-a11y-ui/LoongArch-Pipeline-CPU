@@ -1,0 +1,35 @@
+﻿name,category,format,match_mask,match_value,sample_word,sample_pc,example_registers,precondition,expected_event,expected_result,decoder_owner,mdu_op,v09_status
+ADD.W,ALU三寄存器,3R,0xFFFF8000,0x00100000,0x00100823,0x00001000,rd=r3;rj=r1;rk=r2,"r1=0x0000000C, r2=0x00000005; other registers arbitrary",WB,r3=0x00000011,decoder(5).v,,待V0.9整机验证
+SUB.W,ALU三寄存器,3R,0xFFFF8000,0x00110000,0x00110823,0x00001000,rd=r3;rj=r1;rk=r2,"r1=0x0000000C, r2=0x00000005; other registers arbitrary",WB,r3=0x00000007,decoder(5).v,,待V0.9整机验证
+SLT,ALU三寄存器,3R,0xFFFF8000,0x00120000,0x00120823,0x00001000,rd=r3;rj=r1;rk=r2,"r1=0x0000000C, r2=0x00000005; other registers arbitrary",WB,r3=0x00000000,decoder(5).v,,待V0.9整机验证
+SLTU,ALU三寄存器,3R,0xFFFF8000,0x00128000,0x00128823,0x00001000,rd=r3;rj=r1;rk=r2,"r1=0x0000000C, r2=0x00000005; other registers arbitrary",WB,r3=0x00000000,decoder(5).v,,待V0.9整机验证
+SLL.W,ALU三寄存器,3R,0xFFFF8000,0x00170000,0x00170823,0x00001000,rd=r3;rj=r1;rk=r2,"r1=0x0000000C, r2=0x00000005; other registers arbitrary",WB,r3=0x00000180,decoder(5).v,,待V0.9整机验证
+SRL.W,ALU三寄存器,3R,0xFFFF8000,0x00178000,0x00178823,0x00001000,rd=r3;rj=r1;rk=r2,"r1=0x0000000C, r2=0x00000005; other registers arbitrary",WB,r3=0x00000000,decoder(5).v,,待V0.9整机验证
+SRA.W,ALU三寄存器,3R,0xFFFF8000,0x00180000,0x00180823,0x00001000,rd=r3;rj=r1;rk=r2,"r1=0x0000000C, r2=0x00000005; other registers arbitrary",WB,r3=0x00000000,decoder(5).v,,待V0.9整机验证
+NOR,ALU三寄存器,3R,0xFFFF8000,0x00140000,0x00140823,0x00001000,rd=r3;rj=r1;rk=r2,"r1=0x0000000C, r2=0x00000005; other registers arbitrary",WB,r3=0xFFFFFFF2,decoder(5).v,,待V0.9整机验证
+AND,ALU三寄存器,3R,0xFFFF8000,0x00148000,0x00148823,0x00001000,rd=r3;rj=r1;rk=r2,"r1=0x0000000C, r2=0x00000005; other registers arbitrary",WB,r3=0x00000004,decoder(5).v,,待V0.9整机验证
+OR,ALU三寄存器,3R,0xFFFF8000,0x00150000,0x00150823,0x00001000,rd=r3;rj=r1;rk=r2,"r1=0x0000000C, r2=0x00000005; other registers arbitrary",WB,r3=0x0000000D,decoder(5).v,,待V0.9整机验证
+XOR,ALU三寄存器,3R,0xFFFF8000,0x00158000,0x00158823,0x00001000,rd=r3;rj=r1;rk=r2,"r1=0x0000000C, r2=0x00000005; other registers arbitrary",WB,r3=0x00000009,decoder(5).v,,待V0.9整机验证
+ADDI.W,立即数ALU,I12,0xFFC00000,0x02800000,0x02BFF423,0x00001000,rd=r3;rj=r1;immediate=-3,r1=0x0000000C,WB,r3=0x00000009,decoder(5).v,,待V0.9整机验证
+SLTI,立即数ALU,I12,0xFFC00000,0x02000000,0x023FF423,0x00001000,rd=r3;rj=r1;immediate=-3,r1=0x0000000C,WB,r3=0x00000000,decoder(5).v,,待V0.9整机验证
+ANDI,立即数ALU,I12,0xFFC00000,0x03400000,0x03403C23,0x00001000,rd=r3;rj=r1;immediate=15,r1=0x0000000C,WB,r3=0x0000000C,decoder(5).v,,待V0.9整机验证
+ORI,立即数ALU,I12,0xFFC00000,0x03800000,0x03803C23,0x00001000,rd=r3;rj=r1;immediate=15,r1=0x0000000C,WB,r3=0x0000000F,decoder(5).v,,待V0.9整机验证
+XORI,立即数ALU,I12,0xFFC00000,0x03C00000,0x03C03C23,0x00001000,rd=r3;rj=r1;immediate=15,r1=0x0000000C,WB,r3=0x00000003,decoder(5).v,,待V0.9整机验证
+SLLI.W,立即数移位,SHIFT5,0xFFFF8000,0x00408000,0x00408823,0x00001000,rd=r3;rj=r1;immediate=2,r1=0x0000000C,WB,r3=0x00000030,decoder(5).v,,待V0.9整机验证
+SRLI.W,立即数移位,SHIFT5,0xFFFF8000,0x00448000,0x00448823,0x00001000,rd=r3;rj=r1;immediate=2,r1=0x0000000C,WB,r3=0x00000003,decoder(5).v,,待V0.9整机验证
+SRAI.W,立即数移位,SHIFT5,0xFFFF8000,0x00488000,0x00488823,0x00001000,rd=r3;rj=r1;immediate=2,r1=0x0000000C,WB,r3=0x00000003,decoder(5).v,,待V0.9整机验证
+LU12I.W,高位立即数,U20,0xFE000000,0x14000000,0x142468A3,0x00001000,rd=r3;offset_or_u20=74565,none,WB,r3=0x12345000,decoder(5).v,,待V0.9整机验证
+LD.W,访存,I12,0xFFC00000,0x28800000,0x28802023,0x00001000,rd=r3;rj=r1;immediate=8,r1=0x40; RAM[0x48]=0x12345678,WB,r3=0x12345678; read addr=0x48,decoder(5).v,,待V0.9整机验证
+ST.W,访存,I12,0xFFC00000,0x29800000,0x29803022,0x00001000,rd=r2;rj=r1;immediate=12,r1=0x40; r2=0xDEADBEEF,STORE,addr=0x4C; data=0xDEADBEEF; no WB,decoder(5).v,,待V0.9整机验证
+BEQ,分支跳转,I16,0xFC000000,0x58000000,0x58000C22,0x00001000,rd=r2;rj=r1;immediate=3,r1=12; r2=12,BRANCH,taken; target PC=0x100C; no WB,decoder(5).v,,待V0.9整机验证
+BNE,分支跳转,I16,0xFC000000,0x5C000000,0x5C000C22,0x00001000,rd=r2;rj=r1;immediate=3,r1=12; r2=5,BRANCH,taken; target PC=0x100C; no WB,decoder(5).v,,待V0.9整机验证
+JIRL,分支跳转,I16,0xFC000000,0x4C000000,0x4C000C23,0x00001000,rd=r3;rj=r1;immediate=3,r1=0x200,BRANCH+WB,target PC=0x20C; WB r3=0x1004,decoder(5).v,,待V0.9整机验证
+B,分支跳转,I26,0xFC000000,0x50000000,0x50000C00,0x00001000,offs26=3;inst[25:10]=3;inst[9:0]=0,PC=0x1000,BRANCH,byte offset=+12; target PC=0x100C; no WB,decoder(5).v,,待V0.9整机验证
+BL,分支跳转,I26,0xFC000000,0x54000000,0x54000C00,0x00001000,offs26=3;inst[25:10]=3;inst[9:0]=0,PC=0x1000,BRANCH+WB,byte offset=+12; target PC=0x100C; WB r1=0x1004,decoder(5).v,,待V0.9整机验证
+MUL.W,MDU乘除法,3R,0xFFFF8000,0x001C0000,0x001C0823,0x00001000,rd=r3;rj=r1;rk=r2,"r1=0x0000000C, r2=0x00000005; other registers arbitrary",WB,r3=0x0000003C,mdu_decode_v08.v + CPU overlay,000,待V0.9整机验证
+MULH.W,MDU乘除法,3R,0xFFFF8000,0x001C8000,0x001C8823,0x00001000,rd=r3;rj=r1;rk=r2,"r1=0x0000000C, r2=0x00000005; other registers arbitrary",WB,r3=0x00000000,mdu_decode_v08.v + CPU overlay,001,待V0.9整机验证
+MULH.WU,MDU乘除法,3R,0xFFFF8000,0x001D0000,0x001D0823,0x00001000,rd=r3;rj=r1;rk=r2,"r1=0x0000000C, r2=0x00000005; other registers arbitrary",WB,r3=0x00000000,mdu_decode_v08.v + CPU overlay,010,待V0.9整机验证
+DIV.W,MDU乘除法,3R,0xFFFF8000,0x00200000,0x00200823,0x00001000,rd=r3;rj=r1;rk=r2,"r1=0x0000000C, r2=0x00000005; other registers arbitrary",WB,r3=0x00000002,mdu_decode_v08.v + CPU overlay,011,待V0.9整机验证
+DIV.WU,MDU乘除法,3R,0xFFFF8000,0x00210000,0x00210823,0x00001000,rd=r3;rj=r1;rk=r2,"r1=0x0000000C, r2=0x00000005; other registers arbitrary",WB,r3=0x00000002,mdu_decode_v08.v + CPU overlay,100,待V0.9整机验证
+MOD.W,MDU乘除法,3R,0xFFFF8000,0x00208000,0x00208823,0x00001000,rd=r3;rj=r1;rk=r2,"r1=0x0000000C, r2=0x00000005; other registers arbitrary",WB,r3=0x00000002,mdu_decode_v08.v + CPU overlay,101,待V0.9整机验证
+MOD.WU,MDU乘除法,3R,0xFFFF8000,0x00218000,0x00218823,0x00001000,rd=r3;rj=r1;rk=r2,"r1=0x0000000C, r2=0x00000005; other registers arbitrary",WB,r3=0x00000002,mdu_decode_v08.v + CPU overlay,110,待V0.9整机验证
