@@ -1,0 +1,41 @@
+﻿index,pc,machine_hex,mnemonic,fields,executed,expected_effect,description
+0,0x00001000,0x02801801,ADDI.W,"rd=r1,rj=r0,imm=6",yes,WB r1=00000006,seed r1=6
+1,0x00001004,0x02800C02,ADDI.W,"rd=r2,rj=r0,imm=3",yes,WB r2=00000003,seed r2=3
+2,0x00001008,0x00100823,ADD.W,"rd=r3,rj=r1,rk=r2",yes,WB r3=00000009,ALU RAW r3=9
+3,0x0000100C,0x00110864,SUB.W,"rd=r4,rj=r3,rk=r2",yes,WB r4=00000006,ALU chain r4=6
+4,0x00001010,0x001C0885,MUL.W,"rd=r5,rj=r4,rk=r2",yes,WB r5=00000012,ALU to MDU r5=18
+5,0x00001014,0x00100CA6,ADD.W,"rd=r6,rj=r5,rk=r3",yes,WB r6=0000001b,MDU to ALU r6=27
+6,0x00001018,0x002008C7,DIV.W,"rd=r7,rj=r6,rk=r2",yes,WB r7=00000009,signed divide r7=9
+7,0x0000101C,0x002090C8,MOD.W,"rd=r8,rj=r6,rk=r4",yes,WB r8=00000003,signed remainder r8=3
+8,0x00001020,0x001C90C9,MULH.W,"rd=r9,rj=r6,rk=r4",yes,WB r9=00000000,signed high r9=0
+9,0x00001024,0x001D10CA,MULH.WU,"rd=r10,rj=r6,rk=r4",yes,WB r10=00000000,unsigned high r10=0
+10,0x00001028,0x002108CB,DIV.WU,"rd=r11,rj=r6,rk=r2",yes,WB r11=00000009,unsigned divide r11=9
+11,0x0000102C,0x002190CC,MOD.WU,"rd=r12,rj=r6,rk=r4",yes,WB r12=00000003,unsigned remainder r12=3
+12,0x00001030,0x29801005,ST.W,"rd=r5,rj=r0,imm=4",yes,STORE addr=00000004 data=00000012,STORE RAM[1]=18
+13,0x00001034,0x2880100D,LD.W,"rd=r13,rj=r0,imm=4",yes,WB r13=00000012,LOAD r13=18
+14,0x00001038,0x00101DAE,ADD.W,"rd=r14,rj=r13,rk=r7",yes,WB r14=0000001b,load to ALU r14=27
+15,0x0000103C,0x5C000DC6,BNE,"rj=r14,rd=r6,offset_words=3",yes,not taken target=00001048,not-taken branch
+16,0x00001040,0x58000DC6,BEQ,"rj=r14,rd=r6,offset_words=3",yes,taken target=0000104c,taken to word 19; kill 17-18
+17,0x00001044,0x29802001,ST.W,"rd=r1,rj=r0,imm=8",no_wrong_path,SUPPRESSED (no WB / no Store),WRONG PATH Store must be suppressed
+18,0x00001048,0x02818C0F,ADDI.W,"rd=r15,rj=r0,imm=99",no_wrong_path,SUPPRESSED (no WB / no Store),WRONG PATH WB must be suppressed
+19,0x0000104C,0x001C09B0,MUL.W,"rd=r16,rj=r13,rk=r2",yes,WB r16=00000036,load to MDU r16=54
+20,0x00001050,0x02800611,ADDI.W,"rd=r17,rj=r16,imm=1",yes,WB r17=00000037,MDU to ALU r17=55
+21,0x00001054,0x29803011,ST.W,"rd=r17,rj=r0,imm=12",yes,STORE addr=0000000c data=00000037,STORE RAM[3]=55
+22,0x00001058,0x28803012,LD.W,"rd=r18,rj=r0,imm=12",yes,WB r18=00000037,LOAD r18=55
+23,0x0000105C,0x00208A53,MOD.W,"rd=r19,rj=r18,rk=r2",yes,WB r19=00000001,load directly to MDU r19=1
+24,0x00001060,0x58000E60,BEQ,"rj=r19,rd=r0,offset_words=3",yes,not taken target=0000106c,not-taken branch
+25,0x00001064,0x5C000E60,BNE,"rj=r19,rd=r0,offset_words=3",yes,taken target=00001070,taken to word 28; kill 26-27
+26,0x00001068,0x29804002,ST.W,"rd=r2,rj=r0,imm=16",no_wrong_path,SUPPRESSED (no WB / no Store),WRONG PATH Store must be suppressed
+27,0x0000106C,0x02813414,ADDI.W,"rd=r20,rj=r0,imm=77",no_wrong_path,SUPPRESSED (no WB / no Store),WRONG PATH WB must be suppressed
+28,0x00001070,0x00104655,ADD.W,"rd=r21,rj=r18,rk=r17",yes,WB r21=0000006e,ALU r21=110
+29,0x00001074,0x00159AB6,XOR,"rd=r22,rj=r21,rk=r6",yes,WB r22=00000075,ALU logic r22=117
+30,0x00001078,0x29805016,ST.W,"rd=r22,rj=r0,imm=20",yes,STORE addr=00000014 data=00000075,STORE RAM[5]=117
+31,0x0000107C,0x28805017,LD.W,"rd=r23,rj=r0,imm=20",yes,WB r23=00000075,LOAD r23=117
+32,0x00001080,0x02BFFEF8,ADDI.W,"rd=r24,rj=r23,imm=-1",yes,WB r24=00000074,load to ALU r24=116
+33,0x00001084,0x03803C19,ORI,"rd=r25,rj=r0,imm=15",yes,WB r25=0000000f,zero extend immediate r25=15
+34,0x00001088,0x02BFE41A,ADDI.W,"rd=r26,rj=r0,imm=-7",yes,WB r26=fffffff9,signed seed r26=-7
+35,0x0000108C,0x001C0B5B,MUL.W,"rd=r27,rj=r26,rk=r2",yes,WB r27=ffffffeb,signed multiply -21
+36,0x00001090,0x00200B7C,DIV.W,"rd=r28,rj=r27,rk=r2",yes,WB r28=fffffff9,signed divide -7
+37,0x00001094,0x0020937D,MOD.W,"rd=r29,rj=r27,rk=r4",yes,WB r29=fffffffd,signed negative remainder -3
+38,0x00001098,0x001C8B5E,MULH.W,"rd=r30,rj=r26,rk=r2",yes,WB r30=ffffffff,signed multiply high -1
+39,0x0000109C,0x001D0B5F,MULH.WU,"rd=r31,rj=r26,rk=r2",yes,WB r31=00000002,unsigned multiply high 2
