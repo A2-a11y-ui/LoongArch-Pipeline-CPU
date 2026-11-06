@@ -85,14 +85,16 @@ module icache_if_adapter (
         end else if (redirect) begin
             // Redirect is a synchronous event. Do not accept a simultaneous
             // old-path response or IF request. Legacy miss must be drained.
+            // Leaving ST_RESP (or remaining in ST_DRAIN) invalidates the old
+            // response through if_resp_valid. The response payload registers
+            // therefore do not need to be cleared on redirect; consumers must
+            // use if_resp_pc/inst/error only when if_resp_valid is asserted.
+            // This keeps the wide payload bank off the redirect control path.
             case (state)
                 ST_WAIT: state <= cache_ready ? ST_IDLE : ST_DRAIN;
                 ST_DRAIN: state <= cache_ready ? ST_IDLE : ST_DRAIN;
                 default: state <= ST_IDLE;
             endcase
-            result_pc <= 32'b0;
-            result_inst <= 32'b0;
-            result_error <= 1'b0;
         end else begin
             case (state)
                 ST_IDLE: begin
